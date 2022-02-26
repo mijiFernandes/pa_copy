@@ -56,7 +56,7 @@ class CustomLoginView(LoginView):
             points = settings.POINTS_SETTINGS['CREATE_ARTICLE']
         except KeyError:
             points = 0
-        form.get_user.object.modify_points(points)
+        form.user.modify_points(points)
 
         if not remember_me:
             # set session expiry to 0 seconds. So it will automatically close the session after the browser is closed.
