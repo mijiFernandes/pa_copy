@@ -6,6 +6,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from django.contrib.auth.decorators import login_required
 
+from mysite import settings
 from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
 
 
@@ -50,6 +51,12 @@ class CustomLoginView(LoginView):
 
     def form_valid(self, form):
         remember_me = form.cleaned_data.get('remember_me')
+
+        try:
+            points = settings.POINTS_SETTINGS['CREATE_ARTICLE']
+        except KeyError:
+            points = 0
+        form.get_user.modify_points(points)
 
         if not remember_me:
             # set session expiry to 0 seconds. So it will automatically close the session after the browser is closed.
