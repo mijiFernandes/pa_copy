@@ -1,7 +1,9 @@
+from django.contrib.auth import authenticate
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -46,40 +48,25 @@ class RegisterView(View):
         return render(request, self.template_name, {'form': form})
 
 
-# Class based view that extends from the built in login view to add a remember me functionality
-class CustomLoginView(LoginView):
-    form_class = LoginForm
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
 
-    def form_valid(self, form):
-        remember_me = form.cleaned_data.get('remember_me')
-
-        if not remember_me:
-            # set session expiry to 0 seconds. So it will automatically close the session after the browser is closed.
-            self.request.session.set_expiry(0)
-
-            # Set session as modified to force data updates/cookie to be saved.
-            self.request.session.modified = True
-
-        # else browser session will be as long as the session cookie time "SESSION_COOKIE_AGE" defined in settings.py
-        return super(CustomLoginView, self).form_valid(form)
-
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-
-        if form.is_valid():
-            form.save()
-
+        if user is not None:
+            auth.login(request, user)
             try:
                 points = settings.POINTS_SETTINGS['CREATE_ARTICLE']
             except KeyError:
                 points = 0
             request.user.modify_points(points)
-
             return redirect(to='login_done')
         else:
-            return render(request, 'users/login.html', {'error': 'username or password is incorrect.'})
-
-        return render(request, 'users/login.html', {'form': form})
+            return render(request, 'user/login.html', {'error': 'username or password is incorrect.'})
+    else:
+        form = AuthenticationForm
+        return render(request, 'user/login.html', {'form': form})
 
 
 class LoginDoneTV(TemplateView):

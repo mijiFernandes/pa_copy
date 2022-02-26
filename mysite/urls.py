@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from users.views import CustomLoginView, ResetPasswordView, ChangePasswordView, LoginDoneTV
+from users.views import login, ResetPasswordView, ChangePasswordView, LoginDoneTV
 
 from django.conf.urls import url
 from mysite.views import HomeView
@@ -30,9 +30,7 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('board/', include('board.urls')),
     path('user/', include('users.urls')),
-    path('login/',
-         CustomLoginView.as_view(redirect_authenticated_user=True, template_name='users/login.html',
-                                 authentication_form=LoginForm), name='login'),
+    path('login/', login, name='login'),
     path('login/done/', LoginDoneTV.as_view(), name='login_done'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
 
