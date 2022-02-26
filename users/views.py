@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 
 from mysite import settings
 from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
@@ -79,6 +80,10 @@ class CustomLoginView(LoginView):
             return render(request, 'users/login.html', {'error': 'username or password is incorrect.'})
 
         return render(request, 'users/login.html', {'form': form})
+
+
+class LoginDoneTV(TemplateView):
+    template_name = 'users/login_done.html'
 
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
