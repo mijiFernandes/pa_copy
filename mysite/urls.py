@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from users.views import CustomLoginView, ResetPasswordView, ChangePasswordView
+from users.views import CustomLoginView, ResetPasswordView, ChangePasswordView, LoginDoneTV
 
 from django.conf.urls import url
 from mysite.views import HomeView
