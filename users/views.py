@@ -52,12 +52,6 @@ class CustomLoginView(LoginView):
     def form_valid(self, form):
         remember_me = form.cleaned_data.get('remember_me')
 
-        try:
-            points = settings.POINTS_SETTINGS['CREATE_ARTICLE']
-        except KeyError:
-            points = 0
-        self.request.user.modify_points(points)
-
         if not remember_me:
             # set session expiry to 0 seconds. So it will automatically close the session after the browser is closed.
             self.request.session.set_expiry(0)
@@ -67,6 +61,24 @@ class CustomLoginView(LoginView):
 
         # else browser session will be as long as the session cookie time "SESSION_COOKIE_AGE" defined in settings.py
         return super(CustomLoginView, self).form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            form.save()
+
+            try:
+                points = settings.POINTS_SETTINGS['CREATE_ARTICLE']
+            except KeyError:
+                points = 0
+            request.user.modify_points(points)
+
+            return redirect(to='login_done')
+        else:
+            return render(request, 'users/login.html', {'error': 'username or password is incorrect.'})
+
+        return render(request, 'users/login.html', {'form': form})
 
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
