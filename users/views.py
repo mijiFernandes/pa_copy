@@ -63,10 +63,10 @@ def login(request):
             request.user.modify_points(points)
             return redirect(to='login_done')
         else:
-            return render(request, 'user/login.html', {'error': 'username or password is incorrect.'})
+            return render(request, 'users/login.html', {'error': 'username or password is incorrect.'})
     else:
         form = AuthenticationForm
-        return render(request, 'user/login.html', {'form': form})
+        return render(request, 'users/login.html', {'form': form})
 
 
 class LoginDoneTV(TemplateView):
